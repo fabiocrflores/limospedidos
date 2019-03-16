@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Limos Gestor de Pedidos</string>
+    <string name="title_activity_login">LoginActivity</string>
+
+    <string name="email">E-mail</string>
+    <string name="senha">Senha</string>
+    <string name="entrar">Entrar</string>
+
+    <string name="sem_internet">Você ainda está sem conexão com a internet, verifique as configuraçãoes do seu aparelho</string>
+</resources>
