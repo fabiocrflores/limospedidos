@@ -5,6 +5,28 @@
     <string name="email">E-mail</string>
     <string name="senha">Senha</string>
     <string name="entrar">Entrar</string>
+    <string name="logout">Logout</string>
+    <string name="detalhes">Detalhes</string>
+    <string name="aprovar">Aprovar</string>
+    <string name="recusar">Recusar</string>
+    <string name="enviar">Enviar</string>
+    <string name="concluir">Concluir</string>
 
     <string name="sem_internet">Você ainda está sem conexão com a internet, verifique as configuraçãoes do seu aparelho</string>
+
+
+    <!--- Com parametros -->
+    <string name="preenchaocampo">Preencha o campo %1$s</string>
+    <string name="n_pedido">N. do pedido: %1$s</string>
+    <string name="data_pedido">Data do pedido: %1$s</string>
+    <string name="usuario">Usuário: %1$s</string>
+    <string name="telefone">Telefone: %1$s</string>
+    <string name="endereco">Endereço: %1$s, %1$s</string>
+    <string name="endereco_complemento">Endereço: %1$s, %1$s - %1$s</string>
+    <string name="bairro_cidade">Bairro: %1$s, Cidade: %1$s - %1$s, CEP: %1$s</string>
+    <string name="produtos">Produtos: %1$s</string>
+    <string name="desconto">Desconto: %1$s</string>
+    <string name="frete">Frete: %1$s</string>
+    <string name="cashback">Cashback: %1$s</string>
+    <string name="total">Total: %1$s</string>
 </resources>
