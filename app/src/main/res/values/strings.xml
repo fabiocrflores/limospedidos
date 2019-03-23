@@ -9,6 +9,7 @@
     <string name="detalhes">Detalhes</string>
     <string name="aprovar">Aprovar</string>
     <string name="recusar">Recusar</string>
+    <string name="cancelar">Cancelar</string>
     <string name="enviar">Enviar</string>
     <string name="concluir">Concluir</string>
 
@@ -18,15 +19,17 @@
     <!--- Com parametros -->
     <string name="preenchaocampo">Preencha o campo %1$s</string>
     <string name="n_pedido">N. do pedido: %1$s</string>
-    <string name="data_pedido">Data do pedido: %1$s</string>
+    <string name="data_pedido">Data do pedido: %1$s . %2$s</string>
     <string name="usuario">Usuário: %1$s</string>
-    <string name="telefone">Telefone: %1$s</string>
-    <string name="endereco">Endereço: %1$s, %1$s</string>
-    <string name="endereco_complemento">Endereço: %1$s, %1$s - %1$s</string>
-    <string name="bairro_cidade">Bairro: %1$s, Cidade: %1$s - %1$s, CEP: %1$s</string>
+    <string name="telefone">Telefone: (%1$s) %2$s-%3$s</string>
+    <string name="endereco">Endereço: %1$s, %2$s</string>
+    <string name="endereco_complemento">Endereço: %1$s, %2$s - %3$s</string>
+    <string name="bairro">Bairro: %1$s</string>
+    <string name="cidade_uf_cep">Cidade: %1$s - %2$s, CEP: %3$s</string>
     <string name="produtos">Produtos: %1$s</string>
     <string name="desconto">Desconto: %1$s</string>
     <string name="frete">Frete: %1$s</string>
     <string name="cashback">Cashback: %1$s</string>
     <string name="total">Total: %1$s</string>
+    <string name="atualizado_sucesso">Pedido %1$s com sucesso</string>
 </resources>

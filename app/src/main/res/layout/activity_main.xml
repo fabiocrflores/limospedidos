@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/quasebranco"
     tools:context=".MainActivity">
 
     <include
@@ -14,17 +15,18 @@
         android:id="@+id/rvPedidos"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="2dp"
         android:background="@android:color/white"
-        app:layout_constraintBottom_toTopOf="@+id/pedidosMenu"
+        app:layout_constraintBottom_toTopOf="@+id/bnvPedidosMenu"
         app:layout_constraintTop_toBottomOf="@+id/include2"
-        tools:layout_editor_absoluteX="5dp"
+        tools:layout_editor_absoluteX="8dp"
         tools:listitem="@layout/recyclerview_pedidos">
 
     </android.support.v7.widget.RecyclerView>
 
     <android.support.design.widget.BottomNavigationView
 
-        android:id="@+id/pedidosMenu"
+        android:id="@+id/bnvPedidosMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/branco"
@@ -47,7 +49,6 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

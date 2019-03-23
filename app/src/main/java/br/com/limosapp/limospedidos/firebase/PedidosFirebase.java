@@ -1,16 +1,24 @@
 package br.com.limosapp.limospedidos.firebase;
 
 public class PedidosFirebase {
-    private int Pedido;
-    private String data, hora, nomeusuario, endereco, numero, bairro, cidade, cep;
+    private int status, pedido;
+    private String data, hora, nomeusuario, telefone, endereco, numero, complemento, bairro, cidade, uf, cep;
     private double valorprodutos, valordesconto, valorfrete, valorcash, valortotal;
 
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     public int getPedido() {
-        return Pedido;
+        return pedido;
     }
 
     public void setPedido(int pedido) {
-        Pedido = pedido;
+        this.pedido = pedido;
     }
 
     public String getData() {
@@ -37,6 +45,14 @@ public class PedidosFirebase {
         this.nomeusuario = nomeusuario;
     }
 
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
     public String getEndereco() {
         return endereco;
     }
@@ -53,6 +69,14 @@ public class PedidosFirebase {
         this.numero = numero;
     }
 
+    public String getComplemento() {
+        return complemento;
+    }
+
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
+    }
+
     public String getBairro() {
         return bairro;
     }
@@ -67,6 +91,14 @@ public class PedidosFirebase {
 
     public void setCidade(String cidade) {
         this.cidade = cidade;
+    }
+
+    public String getUf() {
+        return uf;
+    }
+
+    public void setUf(String uf) {
+        this.uf = uf;
     }
 
     public String getCep() {
