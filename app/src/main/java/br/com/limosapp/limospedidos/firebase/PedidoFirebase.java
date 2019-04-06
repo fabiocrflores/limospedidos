@@ -1,9 +1,15 @@
 package br.com.limosapp.limospedidos.firebase;
 
-public class PedidosFirebase {
+import com.bignerdranch.expandablerecyclerview.model.Parent;
+
+import java.util.List;
+
+public class PedidoFirebase implements Parent<PedidoProdutoFirebase> {
     private int status, pedido;
-    private String data, hora, nomeusuario, telefone, endereco, numero, complemento, bairro, cidade, uf, cep;
+    private String idpedido, data, hora, nomeusuario, telefone, endereco, numero, complemento, bairro, cidade, uf, cep, formapagamento;
     private double valorprodutos, valordesconto, valorfrete, valorcash, valortotal;
+    private boolean iniciaexpandido;
+    private List<PedidoProdutoFirebase> listaPedidoProdutos;
 
     public int getStatus() {
         return status;
@@ -11,6 +17,14 @@ public class PedidosFirebase {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getIdpedido() {
+        return idpedido;
+    }
+
+    public void setIdpedido(String idpedido) {
+        this.idpedido = idpedido;
     }
 
     public int getPedido() {
@@ -109,11 +123,19 @@ public class PedidosFirebase {
         this.cep = cep;
     }
 
+    public String getFormapagamento() {
+        return formapagamento;
+    }
+
+    public void setFormaPagamento(String formapagamento) {
+        this.formapagamento = formapagamento;
+    }
+
     public double getValorprodutos() {
         return valorprodutos;
     }
 
-    public void setValorprodutos(double valorprodutos) {
+    public void setValorProdutos(double valorprodutos) {
         this.valorprodutos = valorprodutos;
     }
 
@@ -121,7 +143,7 @@ public class PedidosFirebase {
         return valordesconto;
     }
 
-    public void setValordesconto(double valordesconto) {
+    public void setValorDesconto(double valordesconto) {
         this.valordesconto = valordesconto;
     }
 
@@ -129,7 +151,7 @@ public class PedidosFirebase {
         return valorfrete;
     }
 
-    public void setValorfrete(double valorfrete) {
+    public void setValorFrete(double valorfrete) {
         this.valorfrete = valorfrete;
     }
 
@@ -137,7 +159,7 @@ public class PedidosFirebase {
         return valorcash;
     }
 
-    public void setValorcash(double valorcash) {
+    public void setValorCash(double valorcash) {
         this.valorcash = valorcash;
     }
 
@@ -145,7 +167,25 @@ public class PedidosFirebase {
         return valortotal;
     }
 
-    public void setValortotal(double valortotal) {
+    public void setValorTotal(double valortotal) {
         this.valortotal = valortotal;
+    }
+
+    @Override
+    public List<PedidoProdutoFirebase> getChildList() {
+        return listaPedidoProdutos;
+    }
+
+    public void setChildItemList(List<PedidoProdutoFirebase> listaPedidoProduto) {
+        listaPedidoProdutos = listaPedidoProduto;
+    }
+
+    @Override
+    public boolean isInitiallyExpanded() {
+        return iniciaexpandido;
+    }
+
+    public void setInitiallyExpanded(boolean initiallyExpanded) {
+        iniciaexpandido = initiallyExpanded;
     }
 }
