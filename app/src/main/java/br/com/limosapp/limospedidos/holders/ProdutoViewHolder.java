@@ -43,7 +43,7 @@ public class ProdutoViewHolder extends ChildViewHolder {
     }
 
     public void setObservacao(String observacao) {
-        if (observacao.equals("")){
+        if (observacao.isEmpty()){
             txtObservacao.setVisibility(View.GONE);
         }else {
             txtObservacao.setText(view.getContext().getString(R.string.observacao, observacao));
@@ -51,7 +51,7 @@ public class ProdutoViewHolder extends ChildViewHolder {
     }
 
     public void setComplemento(String complemento) {
-        if (complemento.equals("")){
+        if (complemento.isEmpty()){
             txtComplemento.setVisibility(View.GONE);
         }else {
             txtComplemento.setText(complemento);

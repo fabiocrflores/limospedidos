@@ -18,8 +18,7 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="top"
-            android:paddingBottom="8dp">
+            android:layout_gravity="top">
 
             <TextView
                 android:id="@+id/txtPedido"
@@ -28,7 +27,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/n_pedido"
-                android:textSize="14sp"
+                android:textColor="@color/preto"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -69,60 +69,49 @@
                 app:layout_constraintStart_toStartOf="@+id/txtPedido"
                 app:layout_constraintTop_toBottomOf="@+id/txtUsuario" />
 
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/constraintLayoutDetalhes"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/txtEndereco"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="top"
-                android:visibility="gone"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/endereco"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@id/txtPedido"
+                app:layout_constraintTop_toBottomOf="@+id/txtTelefone" />
+
+            <TextView
+                android:id="@+id/txtBairro"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/bairro"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/txtPedido"
+                app:layout_constraintTop_toBottomOf="@+id/txtEndereco" />
+
+            <TextView
+                android:id="@+id/txtCidade"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/cidade_uf_cep"
+                android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtTelefone">
-
-                <TextView
-                    android:id="@+id/txtEndereco"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/endereco"
-                    android:textSize="12sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/txtBairro"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/bairro"
-                    android:textSize="12sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/txtEndereco"
-                    app:layout_constraintTop_toBottomOf="@+id/txtEndereco" />
-
-                <TextView
-                    android:id="@+id/txtCidade"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/cidade_uf_cep"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/txtBairro"
-                    app:layout_constraintTop_toBottomOf="@+id/txtBairro" />
-            </android.support.constraint.ConstraintLayout>
+                app:layout_constraintStart_toStartOf="@+id/txtPedido"
+                app:layout_constraintTop_toBottomOf="@+id/txtBairro" />
 
             <ImageView
                 android:id="@+id/imgExpandir"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:background="@mipmap/ic_mostrar"
@@ -140,6 +129,7 @@
                 android:fontFamily="@font/comfortaa_light"
                 android:paddingLeft="6dp"
                 android:textAllCaps="false"
+                android:textColor="@color/branco"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/btnRecusar"
@@ -151,7 +141,7 @@
                 android:id="@+id/btnRecusar"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/botaorecusar"
                 android:drawableStart="@drawable/ic_recusar"
@@ -190,6 +180,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="@string/forma_pagamento"
+                android:textAlignment="center"
+                android:textColor="@color/preto"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="@+id/txtTotal"
                 app:layout_constraintStart_toStartOf="parent"
@@ -202,6 +194,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:text="@string/produtos"
+                android:textColor="@color/preto"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -212,6 +205,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="@string/desconto"
+                android:textColor="@color/preto"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="@+id/txtProdutos"
                 app:layout_constraintTop_toBottomOf="@+id/txtProdutos" />
@@ -222,6 +216,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="@string/frete"
+                android:textColor="@color/preto"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="@+id/txtDesconto"
                 app:layout_constraintTop_toBottomOf="@+id/txtDesconto" />
@@ -232,6 +227,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="@string/cashback"
+                android:textColor="@color/preto"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="@+id/txtFrete"
                 app:layout_constraintTop_toBottomOf="@+id/txtFrete" />
@@ -243,7 +239,8 @@
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="8dp"
                 android:text="@string/total"
-                android:textSize="12sp"
+                android:textColor="@color/preto"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/txtCashback"

@@ -62,16 +62,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login(final String email, String password){
+        pBarLogin.setVisibility(View.VISIBLE);
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        pBarLogin.setVisibility(View.GONE);
-
                         if (task.isSuccessful()) {
                             verificaUsuarioWeb(email);
                         } else {
-                            pBarLogin.setVisibility(View.VISIBLE);
+                            pBarLogin.setVisibility(View.GONE);
                             new Toast_layout(LoginActivity.this).mensagem("E-mail ou senha inválido");
                         }
                     }
@@ -90,7 +89,7 @@ public class LoginActivity extends AppCompatActivity {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
                     idusuario = postSnapshot.getKey();
                 }
-                if (idusuario != null && !idusuario.equals("")) {
+                if (idusuario != null && !idusuario.isEmpty()) {
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 }else {
                     new Toast_layout(LoginActivity.this).mensagem("E-mail ou senha inválido");

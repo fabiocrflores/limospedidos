@@ -102,16 +102,18 @@ public class MainActivity extends AppCompatActivity {
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
                     idusuario = postSnapshot.getKey();
 
-                    if (idusuario != null && !idusuario.equals("")) {
+                    if (idusuario != null && !idusuario.isEmpty()) {
                         if (postSnapshot.child("nome").exists())
                             txtNomeUsuario.setText(Objects.requireNonNull(postSnapshot.child("nome").getValue()).toString());
                         if (postSnapshot.child("restaurante").exists())
                             idrestaurante = Objects.requireNonNull(postSnapshot.child("restaurante").getValue()).toString();
                     }
-                }
 
-                carregaFotoRestaurante(idrestaurante);
-                carregaListaPedidos(idrestaurante, 0);
+                    if (!idrestaurante.isEmpty()) {
+                        carregaFotoRestaurante(idrestaurante);
+                        carregaListaPedidos(idrestaurante, 0);
+                    }
+                }
             }
 
             @Override
@@ -125,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         dbRestaurante.child(idrestaurante).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child("fotoperfil").exists() && !dataSnapshot.child("fotoperfil").toString().equals(""))
+                if (dataSnapshot.child("fotoperfil").exists() && !dataSnapshot.child("fotoperfil").toString().isEmpty())
                     imgFotoRestaurante.setImageURI(Objects.requireNonNull(dataSnapshot.child("fotoperfil").getValue()).toString());
             }
 
@@ -182,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
 
                 PedidoFirebase pedidoFirebase = new PedidoFirebase();
                 pedidoFirebase.setIdpedido(idpedido);
+                if (postSnapshot.child("status").exists()) pedidoFirebase.setStatus(Integer.parseInt(Objects.requireNonNull(postSnapshot.child("status").getValue()).toString()));
                 if (postSnapshot.child("pedido").exists()) pedidoFirebase.setPedido(Integer.parseInt(Objects.requireNonNull(postSnapshot.child("pedido").getValue()).toString()));
                 if (postSnapshot.child("data").exists()) pedidoFirebase.setData(Objects.requireNonNull(postSnapshot.child("data").getValue()).toString());
                 if (postSnapshot.child("hora").exists()) pedidoFirebase.setHora(Objects.requireNonNull(postSnapshot.child("hora").getValue()).toString());

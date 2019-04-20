@@ -1,6 +1,5 @@
 package br.com.limosapp.limospedidos.holders;
 
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.Button;
@@ -16,7 +15,6 @@ import br.com.limosapp.limospedidos.R;
 
 public class PedidoViewHolder extends ParentViewHolder {
     private View view;
-    private ConstraintLayout constraintLayoutDetalhes;
     private ImageView imgExpandir;
     private TextView txtPedido, txtDataPedido, txtUsuario, txtTelefone, txtEndereco, txtBairro, txtCidade;
     private TextView txtFormaPagamento, txtProdutos, txtDesconto, txtFrete, txtCashback, txtTotal;
@@ -32,7 +30,6 @@ public class PedidoViewHolder extends ParentViewHolder {
         txtDataPedido = itemView.findViewById(R.id.txtDataPedido);
         txtUsuario = itemView.findViewById(R.id.txtUsuario);
         txtTelefone = itemView.findViewById(R.id.txtTelefone);
-        constraintLayoutDetalhes = itemView.findViewById(R.id.constraintLayoutDetalhes);
         txtEndereco = itemView.findViewById(R.id.txtEndereco);
         txtBairro = itemView.findViewById(R.id.txtBairro);
         txtCidade = itemView.findViewById(R.id.txtCidade);
@@ -75,7 +72,7 @@ public class PedidoViewHolder extends ParentViewHolder {
 
     public void setEndereco(String endereco, String numero, String complemento) {
         String strendereco;
-        if (complemento.equals("")) {
+        if (complemento.isEmpty()) {
             strendereco = view.getContext().getString(R.string.endereco, endereco, numero);
         }else{
             strendereco = view.getContext().getString(R.string.endereco_complemento, endereco, numero, complemento);
@@ -133,10 +130,8 @@ public class PedidoViewHolder extends ParentViewHolder {
     public void setExpanded(boolean isExpanded) {
         super.setExpanded(isExpanded);
         if (isExpanded) {
-            constraintLayoutDetalhes.setVisibility(View.VISIBLE);
             imgExpandir.setBackgroundResource(R.mipmap.ic_esconder);
         }else{
-            constraintLayoutDetalhes.setVisibility(View.GONE);
             imgExpandir.setBackgroundResource(R.mipmap.ic_mostrar);
         }
     }
