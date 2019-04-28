@@ -129,8 +129,8 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     if (!idrestaurante.isEmpty()) {
-                        carregaFotoRestaurante(idrestaurante);
-                        carregaListaPedidosAprovar(idrestaurante);
+                        carregaFotoRestaurante();
+                        carregaListaPedidosAprovar();
                     }
                 }
             }
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void carregaFotoRestaurante(String idrestaurante) {
+    private void carregaFotoRestaurante() {
         dbRestaurante.child(idrestaurante).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void carregaListaPedidosAprovar(final String idrestaurante){
+    private void carregaListaPedidosAprovar(){
         dbpedidos.child(idrestaurante).orderByChild("status").equalTo(0).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     criarNotificacao();
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        criaAdapter(postSnapshot.getKey(), postSnapshot);
+                        criaAdapter(postSnapshot.getKey(), postSnapshot,listaPedidosAprovar, 0);
                     }
                 }
             }
@@ -181,20 +181,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void carregaListaPedidosEnviarConcluir(final String idrestaurante, int status){
-        dbpedidos.child(idrestaurante).orderByChild("status").equalTo(status).addListenerForSingleValueEvent(new ValueEventListener() {
+    private void carregaListaPedidosEnviar(){
+        dbpedidos.child(idrestaurante).orderByChild("status").equalTo(1).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 pBarPedidos.setVisibility(View.VISIBLE);
-                listaPedidos = new ArrayList<>();
-//                listaPedidos.clear();
-//                rvPedidosAprovar.setAdapter(null);
+                listaPedidosEnviar = new ArrayList<>();
 
                 if (dataSnapshot.getValue() == null){
                     pBarPedidos.setVisibility(View.GONE);
                 }else {
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        criaAdapter(postSnapshot.getKey(), postSnapshot);
+                        criaAdapter(postSnapshot.getKey(), postSnapshot, listaPedidosEnviar, 1);
                     }
                 }
             }
@@ -206,7 +204,30 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void criaAdapter(final String idpedido, final DataSnapshot postSnapshot){
+    private void carregaListaPedidosConcluir(){
+        dbpedidos.child(idrestaurante).orderByChild("status").equalTo(2).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                pBarPedidos.setVisibility(View.VISIBLE);
+                listaPedidosConcluir = new ArrayList<>();
+
+                if (dataSnapshot.getValue() == null){
+                    pBarPedidos.setVisibility(View.GONE);
+                }else {
+                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                        criaAdapter(postSnapshot.getKey(), postSnapshot, listaPedidosConcluir, 2);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void criaAdapter(final String idpedido, final DataSnapshot postSnapshot, final List<PedidoFirebase> listaPedidos, final int status){
         DatabaseReference dbprodutos = db.child("pedidos").child(idpedido).child("produtos");
         dbprodutos.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -250,7 +271,17 @@ public class MainActivity extends AppCompatActivity {
                 listaPedidos.add(pedidoFirebase);
 
                 PedidoProdutoAdapter adapter = new PedidoProdutoAdapter(listaPedidos, MainActivity.this, idrestaurante);
-                rvPedidosAprovar.setAdapter(adapter);
+                switch (status){
+                    case 0:
+                        rvPedidosAprovar.setAdapter(adapter);
+                        break;
+                    case 1:
+                        rvPedidosEnviar.setAdapter(adapter);
+                        break;
+                    case 2:
+                        rvPedidosConcluir.setAdapter(adapter);
+                        break;
+                }
 
                 pBarPedidos.setVisibility(View.GONE);
             }
@@ -310,13 +341,22 @@ public class MainActivity extends AppCompatActivity {
 
                     switch (item.getItemId()){
                         case R.id.btnMenuAprovar:
-                            carregaListaPedidosAprovar(idrestaurante);
+                            rvPedidosAprovar.setVisibility(View.VISIBLE);
+                            rvPedidosEnviar.setVisibility(View.GONE);
+                            rvPedidosConcluir.setVisibility(View.GONE);
+                            carregaListaPedidosAprovar();
                             break;
                         case R.id.btnMenuEnviar:
-                            carregaListaPedidosEnviarConcluir(idrestaurante, 1);
+                            rvPedidosAprovar.setVisibility(View.GONE);
+                            rvPedidosEnviar.setVisibility(View.VISIBLE);
+                            rvPedidosConcluir.setVisibility(View.GONE);
+                            carregaListaPedidosEnviar();
                             break;
                         case R.id.btnMenuConcluir:
-                            carregaListaPedidosEnviarConcluir(idrestaurante, 2);
+                            rvPedidosAprovar.setVisibility(View.GONE);
+                            rvPedidosEnviar.setVisibility(View.GONE);
+                            rvPedidosConcluir.setVisibility(View.VISIBLE);
+                            carregaListaPedidosConcluir();
                             break;
                     }
                     return true;
