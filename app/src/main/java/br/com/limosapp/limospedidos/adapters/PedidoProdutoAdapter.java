@@ -1,6 +1,8 @@
 package br.com.limosapp.limospedidos.adapters;
 
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -162,6 +164,10 @@ public class PedidoProdutoAdapter extends ExpandableRecyclerAdapter<PedidoFireba
         switch (status){
             case 1:
                 strstatus = "aprovado";
+                NotificationManager nMgr = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
+                if (nMgr != null) {
+                    nMgr.cancelAll();
+                }
                 break;
             case 2:
                 strstatus = "enviado";

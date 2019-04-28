@@ -12,7 +12,7 @@
         layout="@layout/toolbar" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvPedidos"
+        android:id="@+id/rvPedidosAprovar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="2dp"
@@ -21,6 +21,34 @@
         app:layout_constraintTop_toBottomOf="@+id/include2"
         tools:layout_editor_absoluteX="8dp"
         tools:listitem="@layout/recyclerview_pedidos">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvPedidosEnviar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:color/white"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/bnvPedidosMenu"
+        app:layout_constraintTop_toBottomOf="@+id/include2"
+        tools:layout_editor_absoluteX="8dp"
+        tools:listitem="@layout/recyclerview_pedidos">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvPedidosConcluir"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@+id/bnvPedidosMenu"
+        app:layout_constraintTop_toBottomOf="@+id/include2"
+        tools:layout_editor_absoluteX="8dp"
+        tools:listitem="@layout/recyclerview_pedidos"
+        tools:visibility="gone">
 
     </android.support.v7.widget.RecyclerView>
 

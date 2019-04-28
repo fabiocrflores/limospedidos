@@ -26,10 +26,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
                 android:text="@string/n_pedido"
                 android:textColor="@color/preto"
                 android:textSize="24sp"
                 android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/btnAprovar"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -53,7 +55,7 @@
                 android:layout_marginEnd="8dp"
                 android:text="@string/usuario"
                 android:textSize="12sp"
-                app:layout_constraintEnd_toStartOf="@+id/btnAprovar"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/txtPedido"
                 app:layout_constraintTop_toBottomOf="@+id/txtDataPedido" />
 
@@ -65,7 +67,7 @@
                 android:layout_marginEnd="8dp"
                 android:text="@string/telefone"
                 android:textSize="12sp"
-                app:layout_constraintEnd_toStartOf="@+id/btnAprovar"
+                app:layout_constraintEnd_toEndOf="@+id/txtUsuario"
                 app:layout_constraintStart_toStartOf="@+id/txtPedido"
                 app:layout_constraintTop_toBottomOf="@+id/txtUsuario" />
 
@@ -108,17 +110,6 @@
                 app:layout_constraintStart_toStartOf="@+id/txtPedido"
                 app:layout_constraintTop_toBottomOf="@+id/txtBairro" />
 
-            <ImageView
-                android:id="@+id/imgExpandir"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="@mipmap/ic_mostrar"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="ContentDescription" />
-
             <Button
                 android:id="@+id/btnAprovar"
                 android:layout_width="36dp"
@@ -134,14 +125,13 @@
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/btnRecusar"
                 app:layout_constraintEnd_toStartOf="@+id/btnRecusar"
-                app:layout_constraintTop_toTopOf="@+id/btnRecusar"
                 tools:ignore="RtlHardcoded,RtlSymmetry" />
 
             <Button
                 android:id="@+id/btnRecusar"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/botaorecusar"
                 android:drawableStart="@drawable/ic_recusar"
@@ -151,7 +141,7 @@
                 android:textSize="13sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imgExpandir"
+                app:layout_constraintTop_toTopOf="@+id/txtPedido"
                 tools:ignore="RtlHardcoded,RtlSymmetry" />
 
         </android.support.constraint.ConstraintLayout>
@@ -186,6 +176,19 @@
                 app:layout_constraintBottom_toBottomOf="@+id/txtTotal"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/txtProdutos" />
+
+            <ImageView
+                android:id="@+id/imgExpandir"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@mipmap/ic_mostrar"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/txtTotal"
+                app:layout_constraintStart_toEndOf="@+id/txtFormaPagamento"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/txtProdutos"

@@ -1,9 +1,18 @@
 package br.com.limosapp.limospedidos;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,7 +43,9 @@ import br.com.limosapp.limospedidos.firebase.PedidoProdutoFirebase;
 public class MainActivity extends AppCompatActivity {
     private SimpleDraweeView imgFotoRestaurante;
     private TextView txtNomeUsuario, txtLogout;
-    private RecyclerView rvPedidos;
+    private RecyclerView rvPedidosAprovar;
+    private RecyclerView rvPedidosEnviar;
+    private RecyclerView rvPedidosConcluir;
     private BottomNavigationView bnvPedidosMenu;
     private ProgressBar pBarPedidos;
 
@@ -43,7 +54,9 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference dbRestaurante = db.child("restaurantes");
     private DatabaseReference dbpedidos = db.child("restaurantepedidos");
 
-    private List<PedidoFirebase> listaPedidos;
+    private List<PedidoFirebase> listaPedidosAprovar;
+    private List<PedidoFirebase> listaPedidosEnviar;
+    private List<PedidoFirebase> listaPedidosConcluir;
 
     private String idusuario, idrestaurante;
 
@@ -66,8 +79,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
         }
-        rvPedidos.setLayoutManager(new LinearLayoutManager(this));
-        rvPedidos.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        rvPedidosAprovar.setLayoutManager(new LinearLayoutManager(this));
+        rvPedidosAprovar.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        rvPedidosEnviar.setLayoutManager(new LinearLayoutManager(this));
+        rvPedidosEnviar.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        rvPedidosConcluir.setLayoutManager(new LinearLayoutManager(this));
+        rvPedidosConcluir.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         txtLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,7 +104,9 @@ public class MainActivity extends AppCompatActivity {
         imgFotoRestaurante = findViewById(R.id.imgFotoRestaurante);
         txtNomeUsuario = findViewById(R.id.txtNomeUsuario);
         txtLogout = findViewById(R.id.txtLogout);
-        rvPedidos = findViewById(R.id.rvPedidos);
+        rvPedidosAprovar = findViewById(R.id.rvPedidosAprovar);
+        rvPedidosEnviar = findViewById(R.id.rvPedidosEnviar);
+        rvPedidosConcluir = findViewById(R.id.rvPedidosConcluir);
         bnvPedidosMenu = findViewById(R.id.bnvPedidosMenu);
         pBarPedidos = findViewById(R.id.pBarPedidos);
     }
@@ -111,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
                     if (!idrestaurante.isEmpty()) {
                         carregaFotoRestaurante(idrestaurante);
-                        carregaListaPedidos(idrestaurante, 0);
+                        carregaListaPedidosAprovar(idrestaurante);
                     }
                 }
             }
@@ -138,14 +157,38 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void carregaListaPedidos(final String idrestaurante, int status){
-        dbpedidos.child(idrestaurante).orderByChild("status").equalTo(status).addValueEventListener(new ValueEventListener() {
+    private void carregaListaPedidosAprovar(final String idrestaurante){
+        dbpedidos.child(idrestaurante).orderByChild("status").equalTo(0).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                pBarPedidos.setVisibility(View.VISIBLE);
+                listaPedidosAprovar = new ArrayList<>();
+
+                if (dataSnapshot.getValue() == null){
+                    pBarPedidos.setVisibility(View.GONE);
+                }else {
+                    criarNotificacao();
+                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                        criaAdapter(postSnapshot.getKey(), postSnapshot);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void carregaListaPedidosEnviarConcluir(final String idrestaurante, int status){
+        dbpedidos.child(idrestaurante).orderByChild("status").equalTo(status).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 pBarPedidos.setVisibility(View.VISIBLE);
                 listaPedidos = new ArrayList<>();
-                listaPedidos.clear();
-                rvPedidos.setAdapter(null);
+//                listaPedidos.clear();
+//                rvPedidosAprovar.setAdapter(null);
 
                 if (dataSnapshot.getValue() == null){
                     pBarPedidos.setVisibility(View.GONE);
@@ -164,12 +207,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void criaAdapter(final String idpedido, final DataSnapshot postSnapshot){
-        final PedidoProdutoFirebase pedidoProdutoFirebase = new PedidoProdutoFirebase();
-
         DatabaseReference dbprodutos = db.child("pedidos").child(idpedido).child("produtos");
         dbprodutos.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                PedidoProdutoFirebase pedidoProdutoFirebase = new PedidoProdutoFirebase();
                 List<PedidoProdutoFirebase> listaPedidoProdutos = new ArrayList<>();
 
                 for (DataSnapshot postSnapshotProduto: dataSnapshot.getChildren()) {
@@ -208,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
                 listaPedidos.add(pedidoFirebase);
 
                 PedidoProdutoAdapter adapter = new PedidoProdutoAdapter(listaPedidos, MainActivity.this, idrestaurante);
-                rvPedidos.setAdapter(adapter);
+                rvPedidosAprovar.setAdapter(adapter);
 
                 pBarPedidos.setVisibility(View.GONE);
             }
@@ -220,6 +262,46 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    protected void criarNotificacao() {
+        try {
+            Uri notification = Uri.parse("android.resource://"
+                    + getBaseContext().getPackageName() + "/" + R.raw.efeito);
+            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+            r.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Intent intent = new Intent(MainActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
+
+        NotificationManager notificationManager = (NotificationManager) getBaseContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationCompat.Builder builder;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel notificationChannel = new NotificationChannel("1", "LimosPedidos", importance);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+            builder = new NotificationCompat.Builder(getApplicationContext(), notificationChannel.getId());
+        } else {
+            builder = new NotificationCompat.Builder(getApplicationContext());
+        }
+
+        builder = builder
+                .setSmallIcon(R.drawable.img_icon)
+                .setContentTitle("Novos pedidos")
+                .setContentText("Existem novos pedidos aguardando aprovação!")
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        if (notificationManager != null) {
+            notificationManager.notify(1, builder.build());
+        }
+    }
+
     private BottomNavigationView.OnNavigationItemSelectedListener navlistener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
@@ -228,18 +310,17 @@ public class MainActivity extends AppCompatActivity {
 
                     switch (item.getItemId()){
                         case R.id.btnMenuAprovar:
-                            carregaListaPedidos(idrestaurante, 0);
+                            carregaListaPedidosAprovar(idrestaurante);
                             break;
                         case R.id.btnMenuEnviar:
-                            carregaListaPedidos(idrestaurante, 1);
+                            carregaListaPedidosEnviarConcluir(idrestaurante, 1);
                             break;
                         case R.id.btnMenuConcluir:
-                            carregaListaPedidos(idrestaurante, 2);
+                            carregaListaPedidosEnviarConcluir(idrestaurante, 2);
                             break;
                     }
                     return true;
                 }
             };
-
 
 }
