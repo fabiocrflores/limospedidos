@@ -1,4 +1,4 @@
-package br.com.limosapp.limospedidos.firebase;
+package br.com.limosapp.limospedidos.model;
 
 import com.bignerdranch.expandablerecyclerview.model.Parent;
 

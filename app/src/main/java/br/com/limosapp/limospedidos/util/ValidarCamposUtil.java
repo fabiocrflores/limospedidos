@@ -5,7 +5,7 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 
-public class ValidarCampos {
+public class ValidarCamposUtil {
 
     public static boolean validarNotNull(View pView, String pMessage) {
         if (pView instanceof EditText) {

@@ -1,5 +1,6 @@
-package br.com.limosapp.limospedidos.fragments;
+package br.com.limosapp.limospedidos.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,17 +22,23 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import br.com.limosapp.limospedidos.R;
-import br.com.limosapp.limospedidos.firebase.PedidoFirebase;
+import br.com.limosapp.limospedidos.SplashActivity;
+import br.com.limosapp.limospedidos.model.PedidoFirebase;
+import br.com.limosapp.limospedidos.util.VerificaInternetUtil;
+
+import static br.com.limosapp.limospedidos.application.Application.opcaomenu;
+import static br.com.limosapp.limospedidos.common.AdapterPedidoCommon.criaAdapter;
 
 public class PedidoAprovarFragment extends Fragment {
+    private Activity activity;
     private RecyclerView rvPedidosAprovar;
     private ProgressBar pBarPedidos;
 
     private DatabaseReference db = FirebaseDatabase.getInstance().getReference();
     private DatabaseReference dbRestaurantePedidos = db.child("restaurantepedidos");
-    private DatabaseReference dbPedidos = db.child("pedidos");
 
     private List<PedidoFirebase> listaPedidosAprovar;
 
@@ -52,15 +59,19 @@ public class PedidoAprovarFragment extends Fragment {
 
         Inicializa(view);
 
+        activity = getActivity();
+
+        Bundle bundle;
+        bundle = getArguments();
+        idrestaurante = Objects.requireNonNull(bundle).getString("idrestaurante");
 
         dbRestaurantePedidos.keepSynced(true);
-        dbPedidos.keepSynced(true);
 
         rvPedidosAprovar.setLayoutManager(new LinearLayoutManager(view.getContext()));
         rvPedidosAprovar.addItemDecoration(new DividerItemDecoration(view.getContext(), DividerItemDecoration.VERTICAL));
-        rvPedidosAprovar.setVisibility(View.VISIBLE);
+        rvPedidosAprovar.setHasFixedSize(true);
 
-
+        carregaListaPedidosAprovar();
     }
 
     private void Inicializa(View view){
@@ -68,25 +79,25 @@ public class PedidoAprovarFragment extends Fragment {
         pBarPedidos = view.findViewById(R.id.pBarPedidos);
     }
 
-
     public static PedidoAprovarFragment newInstance() {
         return new PedidoAprovarFragment();
     }
 
-    public void carregaListaPedidosAprovar(){
+    private void carregaListaPedidosAprovar(){
         Query queryRestaurantePedidosAprovar = dbRestaurantePedidos.child(idrestaurante).orderByChild("status").equalTo(0);
         queryRestaurantePedidosAprovar.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshotAprovar) {
-                listaPedidosAprovar = new ArrayList<>();
-                rvPedidosAprovar.setAdapter(null);
+                if (opcaomenu == 0) {
+                    listaPedidosAprovar = new ArrayList<>();
+                    rvPedidosAprovar.setAdapter(null);
 
-                if (dataSnapshotAprovar.getValue() == null){
-                    pBarPedidos.setVisibility(View.GONE);
-                }else {
-//                    criarNotificacao();
-                    for (DataSnapshot postSnapshotAprovar : dataSnapshotAprovar.getChildren()) {
-                        criaAdapter(postSnapshotAprovar.getKey(), postSnapshotAprovar, 0);
+                    if (dataSnapshotAprovar.getValue() == null) {
+                        pBarPedidos.setVisibility(View.GONE);
+                    } else {
+                        for (DataSnapshot postSnapshotAprovar : dataSnapshotAprovar.getChildren()) {
+                            criaAdapter(activity, idrestaurante, postSnapshotAprovar.getKey(), postSnapshotAprovar, listaPedidosAprovar, rvPedidosAprovar, pBarPedidos);
+                        }
                     }
                 }
             }
@@ -97,6 +108,4 @@ public class PedidoAprovarFragment extends Fragment {
             }
         });
     }
-
-
 }

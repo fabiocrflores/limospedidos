@@ -12,11 +12,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -32,32 +31,27 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
-import br.com.limosapp.limospedidos.adapters.PedidoProdutoAdapter;
-import br.com.limosapp.limospedidos.firebase.PedidoFirebase;
-import br.com.limosapp.limospedidos.firebase.PedidoProdutoFirebase;
+import br.com.limosapp.limospedidos.fragment.PedidoAprovarFragment;
+import br.com.limosapp.limospedidos.fragment.PedidoConcluirFragment;
+import br.com.limosapp.limospedidos.fragment.PedidoEnviarFragment;
+import br.com.limosapp.limospedidos.util.VerificaInternetUtil;
+
+import static br.com.limosapp.limospedidos.application.Application.opcaomenu;
 
 public class MainActivity extends AppCompatActivity {
     private SimpleDraweeView imgFotoRestaurante;
     private TextView txtNomeUsuario, txtLogout;
 
-    private RecyclerView rvPedidosEnviar;
-    private RecyclerView rvPedidosConcluir;
     private BottomNavigationView bnvPedidosMenu;
-    private ProgressBar pBarPedidos;
+    private ProgressBar pBarRestaurante;
 
     private DatabaseReference db = FirebaseDatabase.getInstance().getReference();
     private DatabaseReference dbUsuarioWeb = db.child("usuariosweb");
     private DatabaseReference dbRestaurante = db.child("restaurantes");
     private DatabaseReference dbRestaurantePedidos = db.child("restaurantepedidos");
     private DatabaseReference dbPedidos = db.child("pedidos");
-
-
-    private List<PedidoFirebase> listaPedidosEnviar;
-    private List<PedidoFirebase> listaPedidosConcluir;
 
     private String idusuario, idrestaurante;
 
@@ -68,18 +62,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         inicializar();
+        opcaomenu = 0;
 
         dbUsuarioWeb.keepSynced(true);
         dbRestaurante.keepSynced(true);
         dbRestaurantePedidos.keepSynced(true);
         dbPedidos.keepSynced(true);
-
-        rvPedidosEnviar.setLayoutManager(new LinearLayoutManager(this));
-        rvPedidosEnviar.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        rvPedidosEnviar.setVisibility(View.GONE);
-        rvPedidosConcluir.setLayoutManager(new LinearLayoutManager(this));
-        rvPedidosConcluir.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        rvPedidosConcluir.setVisibility(View.GONE);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if(mAuth!=null){
@@ -107,11 +95,8 @@ public class MainActivity extends AppCompatActivity {
         imgFotoRestaurante = findViewById(R.id.imgFotoRestaurante);
         txtNomeUsuario = findViewById(R.id.txtNomeUsuario);
         txtLogout = findViewById(R.id.txtLogout);
-        rvPedidosAprovar = findViewById(R.id.rvPedidosAprovar);
-        rvPedidosEnviar = findViewById(R.id.rvPedidosEnviar);
-        rvPedidosConcluir = findViewById(R.id.rvPedidosConcluir);
         bnvPedidosMenu = findViewById(R.id.bnvPedidosMenu);
-        pBarPedidos = findViewById(R.id.pBarPedidos);
+        pBarRestaurante = findViewById(R.id.pBarPedidos);
     }
 
     private void verificaUsuarioWeb(String email){
@@ -133,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
 
                     if (!idrestaurante.isEmpty()) {
                         carregaFotoRestaurante();
-                        carregaListaPedidosAprovar();
                     }
                 }
             }
@@ -149,8 +133,12 @@ public class MainActivity extends AppCompatActivity {
         dbRestaurante.child(idrestaurante).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child("fotoperfil").exists() && !dataSnapshot.child("fotoperfil").toString().isEmpty())
+                if (dataSnapshot.child("fotoperfil").exists() && !dataSnapshot.child("fotoperfil").toString().isEmpty()) {
                     imgFotoRestaurante.setImageURI(Objects.requireNonNull(dataSnapshot.child("fotoperfil").getValue()).toString());
+                }
+                pBarRestaurante.setVisibility(View.GONE);
+                abreFragment(0);
+                verificaNovoPedidoAprovar();
             }
 
             @Override
@@ -160,117 +148,37 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-
-    public void carregaListaPedidosEnviar(){
-        Query queryRestaurantePedidosEnviar = dbRestaurantePedidos.child(idrestaurante).orderByChild("status").equalTo(1);
-        queryRestaurantePedidosEnviar.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshotEnviar) {
-                listaPedidosEnviar = new ArrayList<>();
-                rvPedidosEnviar.setAdapter(null);
-
-                if (dataSnapshotEnviar.getValue() == null){
-                    pBarPedidos.setVisibility(View.GONE);
-                }else {
-                    for (DataSnapshot postSnapshotEnviar : dataSnapshotEnviar.getChildren()) {
-                        criaAdapter(postSnapshotEnviar.getKey(), postSnapshotEnviar, 1);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+    private void abreFragment(int posicao){
+        Fragment fragment = null;
+        switch (posicao) {
+            case 0:
+                fragment = PedidoAprovarFragment.newInstance();
+                break;
+            case 1:                 
+                fragment = PedidoEnviarFragment.newInstance();
+                break;
+            case 2:
+                fragment = PedidoConcluirFragment.newInstance();
+                break;
+        }
+        Bundle bundle = new Bundle();
+        bundle.putString("idrestaurante", idrestaurante);
+        if (fragment != null) {
+            fragment.setArguments(bundle);
+            FragmentManager fM = getSupportFragmentManager();
+            fM.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fM.beginTransaction().replace(R.id.frameLayout, fragment).commit();
+        }
     }
 
-    public void carregaListaPedidosConcluir(){
-        Query queryRestaurantePedidosConcluir = dbRestaurantePedidos.child(idrestaurante).orderByChild("status").equalTo(2);
-        queryRestaurantePedidosConcluir.addValueEventListener(new ValueEventListener() {
+    private void verificaNovoPedidoAprovar(){
+        Query queryRestaurantePedidosAprovar = dbRestaurantePedidos.child(idrestaurante).orderByChild("status").equalTo(0);
+        queryRestaurantePedidosAprovar.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshotConcluir) {
-                listaPedidosConcluir = new ArrayList<>();
-                rvPedidosConcluir.setAdapter(null);
-
-                if (dataSnapshotConcluir.getValue() == null){
-                    pBarPedidos.setVisibility(View.GONE);
-                }else {
-                    for (DataSnapshot postSnapshotConlcuir : dataSnapshotConcluir.getChildren()) {
-                        criaAdapter(postSnapshotConlcuir.getKey(), postSnapshotConlcuir, 2);
-                    }
+            public void onDataChange(@NonNull DataSnapshot dataSnapshotAprovar) {
+                if (dataSnapshotAprovar.getValue() != null) {
+                    criarNotificacao();
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void criaAdapter(final String idpedido, final DataSnapshot postSnapshot, final int status){
-        DatabaseReference dbprodutos = dbPedidos.child(idpedido).child("produtos");
-        dbprodutos.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                PedidoProdutoAdapter adapter;
-                PedidoProdutoFirebase pedidoProdutoFirebase = new PedidoProdutoFirebase();
-                List<PedidoProdutoFirebase> listaPedidoProdutos = new ArrayList<>();
-
-                for (DataSnapshot postSnapshotProduto: dataSnapshot.getChildren()) {
-                    if (postSnapshotProduto.child("produto").exists()) pedidoProdutoFirebase.setProduto(Objects.requireNonNull(postSnapshotProduto.child("produto").getValue()).toString());
-                    if (postSnapshotProduto.child("quantidade").exists()) pedidoProdutoFirebase.setQuantidade(Double.parseDouble(Objects.requireNonNull(postSnapshotProduto.child("quantidade").getValue()).toString()));
-                    if (postSnapshotProduto.child("valor").exists()) pedidoProdutoFirebase.setValor(Double.parseDouble(Objects.requireNonNull(postSnapshotProduto.child("valor").getValue()).toString()));
-                    if (postSnapshotProduto.child("valortotal").exists()) pedidoProdutoFirebase.setValorTotal(Double.parseDouble(Objects.requireNonNull(postSnapshotProduto.child("valortotal").getValue()).toString()));
-                    if (postSnapshotProduto.child("obs").exists()) pedidoProdutoFirebase.setObs(Objects.requireNonNull(postSnapshotProduto.child("obs").getValue()).toString());
-                    if (postSnapshotProduto.child("complemento").exists()) pedidoProdutoFirebase.setComplemento(Objects.requireNonNull(postSnapshotProduto.child("complemento").getValue()).toString());
-                    listaPedidoProdutos.add(pedidoProdutoFirebase);
-                }
-
-                PedidoFirebase pedidoFirebase = new PedidoFirebase();
-                pedidoFirebase.setIdpedido(idpedido);
-                if (postSnapshot.child("status").exists()) pedidoFirebase.setStatus(Integer.parseInt(Objects.requireNonNull(postSnapshot.child("status").getValue()).toString()));
-                if (postSnapshot.child("pedido").exists()) pedidoFirebase.setPedido(Integer.parseInt(Objects.requireNonNull(postSnapshot.child("pedido").getValue()).toString()));
-                if (postSnapshot.child("data").exists()) pedidoFirebase.setData(Objects.requireNonNull(postSnapshot.child("data").getValue()).toString());
-                if (postSnapshot.child("hora").exists()) pedidoFirebase.setHora(Objects.requireNonNull(postSnapshot.child("hora").getValue()).toString());
-                if (postSnapshot.child("nomeusuario").exists()) pedidoFirebase.setNomeusuario(Objects.requireNonNull(postSnapshot.child("nomeusuario").getValue()).toString());
-                if (postSnapshot.child("telefone").exists()) pedidoFirebase.setTelefone(Objects.requireNonNull(postSnapshot.child("telefone").getValue()).toString());
-                if (postSnapshot.child("endereco").exists()) pedidoFirebase.setEndereco(Objects.requireNonNull(postSnapshot.child("endereco").getValue()).toString());
-                if (postSnapshot.child("numero").exists()) pedidoFirebase.setNumero(Objects.requireNonNull(postSnapshot.child("numero").getValue()).toString());
-                if (postSnapshot.child("complemento").exists()) pedidoFirebase.setComplemento(Objects.requireNonNull(postSnapshot.child("complemento").getValue()).toString());
-                if (postSnapshot.child("bairro").exists()) pedidoFirebase.setBairro(Objects.requireNonNull(postSnapshot.child("bairro").getValue()).toString());
-                if (postSnapshot.child("cidade").exists()) pedidoFirebase.setCidade(Objects.requireNonNull(postSnapshot.child("cidade").getValue()).toString());
-                if (postSnapshot.child("uf").exists()) pedidoFirebase.setUf(Objects.requireNonNull(postSnapshot.child("uf").getValue()).toString());
-                if (postSnapshot.child("cep").exists()) pedidoFirebase.setCep(Objects.requireNonNull(postSnapshot.child("cep").getValue()).toString());
-                if (postSnapshot.child("formapagamento").exists()) pedidoFirebase.setFormaPagamento(Objects.requireNonNull(postSnapshot.child("formapagamento").getValue()).toString());
-                if (postSnapshot.child("valorprodutos").exists()) pedidoFirebase.setValorProdutos(Double.parseDouble(Objects.requireNonNull(postSnapshot.child("valorprodutos").getValue()).toString()));
-                if (postSnapshot.child("valordesconto").exists()) pedidoFirebase.setValorDesconto(Double.parseDouble(Objects.requireNonNull(postSnapshot.child("valordesconto").getValue()).toString()));
-                if (postSnapshot.child("valorfrete").exists()) pedidoFirebase.setValorFrete(Double.parseDouble(Objects.requireNonNull(postSnapshot.child("valorfrete").getValue()).toString()));
-                if (postSnapshot.child("valorcash").exists()) pedidoFirebase.setValorCash(Double.parseDouble(Objects.requireNonNull(postSnapshot.child("valorcash").getValue()).toString()));
-                if (postSnapshot.child("valortotal").exists()) pedidoFirebase.setValorTotal(Double.parseDouble(Objects.requireNonNull(postSnapshot.child("valortotal").getValue()).toString()));
-                pedidoFirebase.setChildItemList(listaPedidoProdutos);
-
-                switch (status){
-                    case 0:
-                        listaPedidosAprovar.add(pedidoFirebase);
-                        adapter = new PedidoProdutoAdapter(listaPedidosAprovar, MainActivity.this, idrestaurante);
-                        rvPedidosAprovar.setAdapter(adapter);
-                        break;
-                    case 1:
-                        listaPedidosEnviar.add(pedidoFirebase);
-                        adapter = new PedidoProdutoAdapter(listaPedidosEnviar, MainActivity.this, idrestaurante);
-                        rvPedidosEnviar.setAdapter(adapter);
-                        break;
-                    case 2:
-                        listaPedidosConcluir.add(pedidoFirebase);
-                        adapter = new PedidoProdutoAdapter(listaPedidosConcluir, MainActivity.this, idrestaurante);
-                        rvPedidosConcluir.setAdapter(adapter);
-                        break;
-                }
-
-                pBarPedidos.setVisibility(View.GONE);
             }
 
             @Override
@@ -324,27 +232,21 @@ public class MainActivity extends AppCompatActivity {
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    pBarPedidos.setVisibility(View.VISIBLE);
-
-                    switch (item.getItemId()){
-                        case R.id.btnMenuAprovar:
-                            rvPedidosAprovar.setVisibility(View.VISIBLE);
-                            rvPedidosEnviar.setVisibility(View.GONE);
-                            rvPedidosConcluir.setVisibility(View.GONE);
-                            carregaListaPedidosAprovar();
-                            break;
-                        case R.id.btnMenuEnviar:
-                            rvPedidosAprovar.setVisibility(View.GONE);
-                            rvPedidosEnviar.setVisibility(View.VISIBLE);
-                            rvPedidosConcluir.setVisibility(View.GONE);
-                            carregaListaPedidosEnviar();
-                            break;
-                        case R.id.btnMenuConcluir:
-                            rvPedidosAprovar.setVisibility(View.GONE);
-                            rvPedidosEnviar.setVisibility(View.GONE);
-                            rvPedidosConcluir.setVisibility(View.VISIBLE);
-                            carregaListaPedidosConcluir();
-                            break;
+                    if (new VerificaInternetUtil().verificaConexao(MainActivity.this)) {
+                        switch (item.getItemId()) {
+                            case R.id.btnopcaomenu:
+                                opcaomenu = 0;
+                                abreFragment(0);
+                                break;
+                            case R.id.btnMenuEnviar:
+                                opcaomenu = 1;
+                                abreFragment(1);
+                                break;
+                            case R.id.btnMenuConcluir:
+                                opcaomenu = 2;
+                                abreFragment(2);
+                                break;
+                        }
                     }
                     return true;
                 }

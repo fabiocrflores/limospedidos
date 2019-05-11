@@ -20,9 +20,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import br.com.limosapp.limospedidos.util.Toast_layout;
+import br.com.limosapp.limospedidos.util.ToastLayoutUtil;
 
-import static br.com.limosapp.limospedidos.util.ValidarCampos.validarNotNull;
+import static br.com.limosapp.limospedidos.util.ValidarCamposUtil.validarNotNull;
 
 public class LoginActivity extends AppCompatActivity {
     EditText edtEmail, edtSenha;
@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
                             verificaUsuarioWeb(email);
                         } else {
                             pBarLogin.setVisibility(View.GONE);
-                            new Toast_layout(LoginActivity.this).mensagem("E-mail ou senha inválido");
+                            new ToastLayoutUtil(LoginActivity.this).mensagem("E-mail ou senha inválido");
                         }
                     }
                 });
@@ -92,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (idusuario != null && !idusuario.isEmpty()) {
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 }else {
-                    new Toast_layout(LoginActivity.this).mensagem("E-mail ou senha inválido");
+                    new ToastLayoutUtil(LoginActivity.this).mensagem("E-mail ou senha inválido");
                 }
                 pBarLogin.setVisibility(View.GONE);
             }

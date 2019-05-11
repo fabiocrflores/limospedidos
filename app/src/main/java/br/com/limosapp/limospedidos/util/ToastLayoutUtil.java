@@ -8,11 +8,11 @@ import android.widget.Toast;
 
 import br.com.limosapp.limospedidos.R;
 
-public class Toast_layout {
+public class ToastLayoutUtil {
 
     private Activity activity;
 
-    public Toast_layout(Activity activity){
+    public ToastLayoutUtil(Activity activity){
         this.activity = activity;
     }
 

@@ -5,7 +5,7 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/btnMenuAprovar"
+        <item android:id="@+id/btnopcaomenu"
             android:checked="true"
             android:title="@string/aprovar"
             android:icon="@drawable/ic_aprovar" />

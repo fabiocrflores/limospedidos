@@ -1,4 +1,4 @@
-package br.com.limosapp.limospedidos.firebase;
+package br.com.limosapp.limospedidos.model;
 
 public class PedidoProdutoFirebase {
     private String produto, complemento, obs;

@@ -1,4 +1,4 @@
-package br.com.limosapp.limospedidos.comum;
+package br.com.limosapp.limospedidos.common;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
@@ -17,10 +17,10 @@ import java.util.List;
 import java.util.Objects;
 
 import br.com.limosapp.limospedidos.adapters.PedidoProdutoAdapter;
-import br.com.limosapp.limospedidos.firebase.PedidoFirebase;
-import br.com.limosapp.limospedidos.firebase.PedidoProdutoFirebase;
+import br.com.limosapp.limospedidos.model.PedidoFirebase;
+import br.com.limosapp.limospedidos.model.PedidoProdutoFirebase;
 
-public class AdapterPedido {
+public class AdapterPedidoCommon {
 
     public static void criaAdapter(final Activity activity, final String idrestaurante, final String idpedido, final DataSnapshot postSnapshot, final List<PedidoFirebase> listaPedidos,
                                    final RecyclerView recyclerView, final ProgressBar pBarPedidos){

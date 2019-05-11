@@ -9,7 +9,7 @@ import android.view.WindowManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import br.com.limosapp.limospedidos.util.VerificaInternet;
+import br.com.limosapp.limospedidos.util.VerificaInternetUtil;
 
 public class SplashActivity extends Activity implements Runnable {
     @Override
@@ -27,7 +27,7 @@ public class SplashActivity extends Activity implements Runnable {
     @Override
     protected void onResume() {
         super.onResume();
-        new VerificaInternet().verificaConexao(SplashActivity.this);
+        new VerificaInternetUtil().verificaConexao(SplashActivity.this);
     }
 
     public void run(){
