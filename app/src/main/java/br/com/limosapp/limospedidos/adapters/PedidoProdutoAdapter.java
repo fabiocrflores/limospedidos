@@ -34,7 +34,8 @@ public class PedidoProdutoAdapter extends ExpandableRecyclerAdapter<PedidoFireba
     private int novostatus;
 
     private DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-    private DatabaseReference dbpedidos = db.child("restaurantepedidos");
+    private DatabaseReference dbrestaurantepedidos = db.child("restaurantepedidos");
+    private DatabaseReference dbpedidos = db.child("pedidos");
 
     public PedidoProdutoAdapter(@NonNull List<PedidoFirebase> listaPedidos, Activity activity, String idrestaurante) {
         super(listaPedidos);
@@ -156,12 +157,13 @@ public class PedidoProdutoAdapter extends ExpandableRecyclerAdapter<PedidoFireba
 //        super.notifyChildChanged(parentPosition, childPosition);
 //    }
 
-    private void atualizarStatusPedido(String idpedido, int status){
+    private void atualizarStatusPedido(String idpedido, int novostatus){
         Map<String,Object> taskMap = new HashMap<>();
-        taskMap.put("status", status);
-        dbpedidos.child(idrestaurante).child(idpedido).updateChildren(taskMap);
+        taskMap.put("status", novostatus);
+        dbrestaurantepedidos.child(idrestaurante).child(idpedido).updateChildren(taskMap);
+        dbpedidos.child(idpedido).updateChildren(taskMap);
 
-        switch (status){
+        switch (novostatus){
             case 1:
                 strstatus = "aprovado";
                 NotificationManager nMgr = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);

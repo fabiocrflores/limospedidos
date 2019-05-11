@@ -12,19 +12,6 @@
         layout="@layout/toolbar" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvPedidosAprovar"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="2dp"
-        android:background="@android:color/white"
-        app:layout_constraintBottom_toTopOf="@+id/bnvPedidosMenu"
-        app:layout_constraintTop_toBottomOf="@+id/include2"
-        tools:layout_editor_absoluteX="8dp"
-        tools:listitem="@layout/recyclerview_pedidos">
-
-    </android.support.v7.widget.RecyclerView>
-
-    <android.support.v7.widget.RecyclerView
         android:id="@+id/rvPedidosEnviar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -44,11 +31,11 @@
         android:layout_height="0dp"
         android:layout_marginTop="2dp"
         android:background="@android:color/white"
+        tools:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/bnvPedidosMenu"
         app:layout_constraintTop_toBottomOf="@+id/include2"
         tools:layout_editor_absoluteX="8dp"
-        tools:listitem="@layout/recyclerview_pedidos"
-        tools:visibility="gone">
+        tools:listitem="@layout/recyclerview_pedidos">
 
     </android.support.v7.widget.RecyclerView>
 
@@ -59,8 +46,8 @@
         android:layout_height="wrap_content"
         android:background="@color/branco"
         app:elevation="2dp"
-        app:itemIconTint="@color/preto"
-        app:itemTextColor="@color/preto"
+        app:itemIconTint="@drawable/bottom_item_background_color"
+        app:itemTextColor="@drawable/bottom_item_background_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

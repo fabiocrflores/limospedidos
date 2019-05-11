@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
 
-    <item android:id="@+id/btnMenuAprovar"
-        android:title="@string/aprovar"
-        android:icon="@drawable/ic_aprovar" />
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/btnMenuAprovar"
+            android:checked="true"
+            android:title="@string/aprovar"
+            android:icon="@drawable/ic_aprovar" />
 
-    <item android:id="@+id/btnMenuEnviar"
-        android:title="@string/enviar"
-        android:icon="@drawable/ic_enviar" />
+        <item android:id="@+id/btnMenuEnviar"
+            android:title="@string/enviar"
+            android:icon="@drawable/ic_enviar" />
 
-    <item android:id="@+id/btnMenuConcluir"
-        android:title="@string/concluir"
-        android:icon="@drawable/ic_concluir" />
-
+        <item android:id="@+id/btnMenuConcluir"
+            android:title="@string/concluir"
+            android:icon="@drawable/ic_concluir" />
+    </group>
 </menu>

@@ -43,7 +43,7 @@ import br.com.limosapp.limospedidos.firebase.PedidoProdutoFirebase;
 public class MainActivity extends AppCompatActivity {
     private SimpleDraweeView imgFotoRestaurante;
     private TextView txtNomeUsuario, txtLogout;
-    private RecyclerView rvPedidosAprovar;
+
     private RecyclerView rvPedidosEnviar;
     private RecyclerView rvPedidosConcluir;
     private BottomNavigationView bnvPedidosMenu;
@@ -52,9 +52,10 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference db = FirebaseDatabase.getInstance().getReference();
     private DatabaseReference dbUsuarioWeb = db.child("usuariosweb");
     private DatabaseReference dbRestaurante = db.child("restaurantes");
-    private DatabaseReference dbpedidos = db.child("restaurantepedidos");
+    private DatabaseReference dbRestaurantePedidos = db.child("restaurantepedidos");
+    private DatabaseReference dbPedidos = db.child("pedidos");
 
-    private List<PedidoFirebase> listaPedidosAprovar;
+
     private List<PedidoFirebase> listaPedidosEnviar;
     private List<PedidoFirebase> listaPedidosConcluir;
 
@@ -70,7 +71,15 @@ public class MainActivity extends AppCompatActivity {
 
         dbUsuarioWeb.keepSynced(true);
         dbRestaurante.keepSynced(true);
-        dbpedidos.keepSynced(true);
+        dbRestaurantePedidos.keepSynced(true);
+        dbPedidos.keepSynced(true);
+
+        rvPedidosEnviar.setLayoutManager(new LinearLayoutManager(this));
+        rvPedidosEnviar.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        rvPedidosEnviar.setVisibility(View.GONE);
+        rvPedidosConcluir.setLayoutManager(new LinearLayoutManager(this));
+        rvPedidosConcluir.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        rvPedidosConcluir.setVisibility(View.GONE);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if(mAuth!=null){
@@ -79,12 +88,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
         }
-        rvPedidosAprovar.setLayoutManager(new LinearLayoutManager(this));
-        rvPedidosAprovar.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        rvPedidosEnviar.setLayoutManager(new LinearLayoutManager(this));
-        rvPedidosEnviar.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        rvPedidosConcluir.setLayoutManager(new LinearLayoutManager(this));
-        rvPedidosConcluir.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         txtLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,42 +160,21 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void carregaListaPedidosAprovar(){
-        dbpedidos.child(idrestaurante).orderByChild("status").equalTo(0).addValueEventListener(new ValueEventListener() {
+
+
+    public void carregaListaPedidosEnviar(){
+        Query queryRestaurantePedidosEnviar = dbRestaurantePedidos.child(idrestaurante).orderByChild("status").equalTo(1);
+        queryRestaurantePedidosEnviar.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                pBarPedidos.setVisibility(View.VISIBLE);
-                listaPedidosAprovar = new ArrayList<>();
-
-                if (dataSnapshot.getValue() == null){
-                    pBarPedidos.setVisibility(View.GONE);
-                }else {
-                    criarNotificacao();
-                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        criaAdapter(postSnapshot.getKey(), postSnapshot,listaPedidosAprovar, 0);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void carregaListaPedidosEnviar(){
-        dbpedidos.child(idrestaurante).orderByChild("status").equalTo(1).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                pBarPedidos.setVisibility(View.VISIBLE);
+            public void onDataChange(@NonNull DataSnapshot dataSnapshotEnviar) {
                 listaPedidosEnviar = new ArrayList<>();
+                rvPedidosEnviar.setAdapter(null);
 
-                if (dataSnapshot.getValue() == null){
+                if (dataSnapshotEnviar.getValue() == null){
                     pBarPedidos.setVisibility(View.GONE);
                 }else {
-                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        criaAdapter(postSnapshot.getKey(), postSnapshot, listaPedidosEnviar, 1);
+                    for (DataSnapshot postSnapshotEnviar : dataSnapshotEnviar.getChildren()) {
+                        criaAdapter(postSnapshotEnviar.getKey(), postSnapshotEnviar, 1);
                     }
                 }
             }
@@ -204,18 +186,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void carregaListaPedidosConcluir(){
-        dbpedidos.child(idrestaurante).orderByChild("status").equalTo(2).addValueEventListener(new ValueEventListener() {
+    public void carregaListaPedidosConcluir(){
+        Query queryRestaurantePedidosConcluir = dbRestaurantePedidos.child(idrestaurante).orderByChild("status").equalTo(2);
+        queryRestaurantePedidosConcluir.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                pBarPedidos.setVisibility(View.VISIBLE);
+            public void onDataChange(@NonNull DataSnapshot dataSnapshotConcluir) {
                 listaPedidosConcluir = new ArrayList<>();
+                rvPedidosConcluir.setAdapter(null);
 
-                if (dataSnapshot.getValue() == null){
+                if (dataSnapshotConcluir.getValue() == null){
                     pBarPedidos.setVisibility(View.GONE);
                 }else {
-                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        criaAdapter(postSnapshot.getKey(), postSnapshot, listaPedidosConcluir, 2);
+                    for (DataSnapshot postSnapshotConlcuir : dataSnapshotConcluir.getChildren()) {
+                        criaAdapter(postSnapshotConlcuir.getKey(), postSnapshotConlcuir, 2);
                     }
                 }
             }
@@ -227,11 +210,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void criaAdapter(final String idpedido, final DataSnapshot postSnapshot, final List<PedidoFirebase> listaPedidos, final int status){
-        DatabaseReference dbprodutos = db.child("pedidos").child(idpedido).child("produtos");
+    private void criaAdapter(final String idpedido, final DataSnapshot postSnapshot, final int status){
+        DatabaseReference dbprodutos = dbPedidos.child(idpedido).child("produtos");
         dbprodutos.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                PedidoProdutoAdapter adapter;
                 PedidoProdutoFirebase pedidoProdutoFirebase = new PedidoProdutoFirebase();
                 List<PedidoProdutoFirebase> listaPedidoProdutos = new ArrayList<>();
 
@@ -268,17 +252,20 @@ public class MainActivity extends AppCompatActivity {
                 if (postSnapshot.child("valortotal").exists()) pedidoFirebase.setValorTotal(Double.parseDouble(Objects.requireNonNull(postSnapshot.child("valortotal").getValue()).toString()));
                 pedidoFirebase.setChildItemList(listaPedidoProdutos);
 
-                listaPedidos.add(pedidoFirebase);
-
-                PedidoProdutoAdapter adapter = new PedidoProdutoAdapter(listaPedidos, MainActivity.this, idrestaurante);
                 switch (status){
                     case 0:
+                        listaPedidosAprovar.add(pedidoFirebase);
+                        adapter = new PedidoProdutoAdapter(listaPedidosAprovar, MainActivity.this, idrestaurante);
                         rvPedidosAprovar.setAdapter(adapter);
                         break;
                     case 1:
+                        listaPedidosEnviar.add(pedidoFirebase);
+                        adapter = new PedidoProdutoAdapter(listaPedidosEnviar, MainActivity.this, idrestaurante);
                         rvPedidosEnviar.setAdapter(adapter);
                         break;
                     case 2:
+                        listaPedidosConcluir.add(pedidoFirebase);
+                        adapter = new PedidoProdutoAdapter(listaPedidosConcluir, MainActivity.this, idrestaurante);
                         rvPedidosConcluir.setAdapter(adapter);
                         break;
                 }
