@@ -8,42 +8,31 @@
     tools:context="br.com.limosapp.limospedidos.LoginActivity">
 
     <ImageView
-        android:id="@+id/imgFundo"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/fundologin" />
-
-    <ImageView
         android:id="@+id/imgIcone"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/img_icon" />
+        app:srcCompat="@drawable/imglogovermelho"
+        tools:ignore="ContentDescription" />
 
     <android.support.design.widget.TextInputLayout
-        style="@style/StyledTilEditText"
         android:id="@+id/textInputEmail"
+        style="@style/StyledTilEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgIcone">
 
         <EditText
             android:id="@+id/edtEmail"
@@ -52,33 +41,26 @@
             android:ems="10"
             android:hint="@string/email"
             android:inputType="textEmailAddress"
-            android:textColor="@color/branco"
-            android:textColorHint="@color/branco"
-            android:textSize="14sp"
+            android:textColor="@color/vermelholimos"
+            android:textColorHint="@color/vermelholimos"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="Autofill" />
     </android.support.design.widget.TextInputLayout>
-
-    <android.support.constraint.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.500" />
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/textInputSenha"
         style="@style/StyledTilEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline">
+        app:layout_constraintTop_toBottomOf="@+id/textInputEmail">
 
         <EditText
             android:id="@+id/edtSenha"
@@ -87,22 +69,22 @@
             android:ems="10"
             android:hint="@string/senha"
             android:inputType="textPassword"
-            android:textColor="@color/branco"
-            android:textColorHint="@color/branco"
-            android:textSize="14sp"
+            android:textColor="@color/vermelholimos"
+            android:textColorHint="@color/vermelholimos"
+            android:textSize="12sp"
             tools:ignore="Autofill" />
     </android.support.design.widget.TextInputLayout>
 
     <Button
-        android:id="@+id/btnEntrar"
+        android:id="@+id/btnLogin"
         android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="25dp"
         android:layout_marginEnd="8dp"
         android:background="@drawable/botaologin"
         android:fontFamily="@font/comfortaa_light"
-        android:text="@string/entrar"
+        android:text="@string/login"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="13sp"

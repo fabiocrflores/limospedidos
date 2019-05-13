@@ -26,7 +26,7 @@ import static br.com.limosapp.limospedidos.util.ValidarCamposUtil.validarNotNull
 
 public class LoginActivity extends AppCompatActivity {
     EditText edtEmail, edtSenha;
-    Button btnEntrar;
+    Button btnLogin;
     ProgressBar pBarLogin;
 
     private FirebaseAuth mAuth;
@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         dbUsuarioWeb.keepSynced(true);
 
-        btnEntrar.setOnClickListener(new View.OnClickListener() {
+        btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!validarNotNull(edtEmail, getString(R.string.preenchaocampo,"e-mail"))) {
@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
     private void inicializar(){
         edtEmail = findViewById(R.id.edtEmail);
         edtSenha = findViewById(R.id.edtSenha);
-        btnEntrar = findViewById(R.id.btnEntrar);
+        btnLogin = findViewById(R.id.btnLogin);
         pBarLogin = findViewById(R.id.pBarLogin);
     }
 
@@ -92,6 +92,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (idusuario != null && !idusuario.isEmpty()) {
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 }else {
+                    FirebaseAuth.getInstance().signOut();
                     new ToastLayoutUtil(LoginActivity.this).mensagem("E-mail ou senha inválido");
                 }
                 pBarLogin.setVisibility(View.GONE);

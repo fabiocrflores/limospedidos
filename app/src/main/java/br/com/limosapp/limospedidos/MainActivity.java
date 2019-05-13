@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         builder = builder
-                .setSmallIcon(R.drawable.img_icon)
+                .setSmallIcon(R.drawable.imgicon)
                 .setContentTitle("Novos pedidos")
                 .setContentText("Existem novos pedidos aguardando aprovação!")
                 .setDefaults(Notification.DEFAULT_ALL)
