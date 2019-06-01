@@ -90,7 +90,9 @@ public class LoginActivity extends AppCompatActivity {
                     idusuario = postSnapshot.getKey();
                 }
                 if (idusuario != null && !idusuario.isEmpty()) {
-                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                 }else {
                     FirebaseAuth.getInstance().signOut();
                     new ToastLayoutUtil(LoginActivity.this).mensagem("E-mail ou senha inválido");

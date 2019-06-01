@@ -1,6 +1,6 @@
 package br.com.limosapp.limospedidos.model;
 
-public class PedidoProdutoFirebase {
+public class PedidoProduto {
     private String produto, complemento, obs;
     private double quantidade, valor, valortotal;
 

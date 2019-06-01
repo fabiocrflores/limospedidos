@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Objects;
 
 import br.com.limosapp.limospedidos.R;
-import br.com.limosapp.limospedidos.model.PedidoFirebase;
+import br.com.limosapp.limospedidos.model.Pedido;
 
 import static br.com.limosapp.limospedidos.application.Application.opcaomenu;
 import static br.com.limosapp.limospedidos.common.AdapterPedidoCommon.criaAdapter;
@@ -38,7 +38,7 @@ public class PedidoEnviarFragment extends Fragment {
     private DatabaseReference db = FirebaseDatabase.getInstance().getReference();
     private DatabaseReference dbRestaurantePedidos = db.child("restaurantepedidos");
 
-    private List<PedidoFirebase> listaPedidosEnviar;
+    private List<Pedido> listaPedidosEnviar;
 
     private String idrestaurante;
 

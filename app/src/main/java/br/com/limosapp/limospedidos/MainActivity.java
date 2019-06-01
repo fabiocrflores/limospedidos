@@ -91,6 +91,24 @@ public class MainActivity extends AppCompatActivity {
         bnvPedidosMenu.setOnNavigationItemSelectedListener(navlistener);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        NotificationManager nMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nMgr != null) {
+            nMgr.cancelAll();
+        }
+    }
+
     private void inicializar(){
         imgFotoRestaurante = findViewById(R.id.imgFotoRestaurante);
         txtNomeUsuario = findViewById(R.id.txtNomeUsuario);
@@ -216,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         builder = builder
-                .setSmallIcon(R.drawable.imgicon)
+                .setSmallIcon(R.drawable.imgiconvermelho)
                 .setContentTitle("Novos pedidos")
                 .setContentText("Existem novos pedidos aguardando aprovação!")
                 .setDefaults(Notification.DEFAULT_ALL)

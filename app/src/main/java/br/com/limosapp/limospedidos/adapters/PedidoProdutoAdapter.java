@@ -1,8 +1,7 @@
 package br.com.limosapp.limospedidos.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,34 +17,47 @@ import android.widget.TextView;
 import com.bignerdranch.expandablerecyclerview.ChildViewHolder;
 import com.bignerdranch.expandablerecyclerview.ExpandableRecyclerAdapter;
 import com.bignerdranch.expandablerecyclerview.ParentViewHolder;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
-import br.com.limosapp.limospedidos.MainActivity;
 import br.com.limosapp.limospedidos.R;
-import br.com.limosapp.limospedidos.model.PedidoFirebase;
-import br.com.limosapp.limospedidos.model.PedidoProdutoFirebase;
+import br.com.limosapp.limospedidos.model.Cupom;
+import br.com.limosapp.limospedidos.model.Pedido;
+import br.com.limosapp.limospedidos.model.PedidoProduto;
+import br.com.limosapp.limospedidos.model.UsuariosCashBackExtrato;
 import br.com.limosapp.limospedidos.util.ToastLayoutUtil;
 import br.com.limosapp.limospedidos.util.VerificaInternetUtil;
 
-public class PedidoProdutoAdapter extends ExpandableRecyclerAdapter<PedidoFirebase, PedidoProdutoFirebase, PedidoProdutoAdapter.PedidoViewHolder, PedidoProdutoAdapter.ProdutoViewHolder> {
+public class PedidoProdutoAdapter extends ExpandableRecyclerAdapter<Pedido, PedidoProduto, PedidoProdutoAdapter.PedidoViewHolder, PedidoProdutoAdapter.ProdutoViewHolder> {
 
     private LayoutInflater mInflater;
     private Activity activity;
-    private String idrestaurante, strstatus;
+
+    private String idrestaurante, strstatus, dataFormatada, horaFormatada;
     private int novostatus;
+    private Long datamili;
+    @SuppressLint("SimpleDateFormat")
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    @SuppressLint("SimpleDateFormat")
+    private SimpleDateFormat horaFormat = new SimpleDateFormat("HH:mm:ss");
 
     private DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-    private DatabaseReference dbrestaurantepedidos = db.child("restaurantepedidos");
-    private DatabaseReference dbpedidos = db.child("pedidos");
 
-    public PedidoProdutoAdapter(@NonNull List<PedidoFirebase> listaPedidos, Activity activity, String idrestaurante) {
+    public PedidoProdutoAdapter(@NonNull List<Pedido> listaPedidos, Activity activity, String idrestaurante) {
         super(listaPedidos);
         mInflater = LayoutInflater.from(activity);
         this.activity = activity;
@@ -67,22 +79,27 @@ public class PedidoProdutoAdapter extends ExpandableRecyclerAdapter<PedidoFireba
     }
 
     @Override
-    public void onBindParentViewHolder(@NonNull PedidoViewHolder pedidoViewHolder, int parentPosition, @NonNull PedidoFirebase pedidoFirebase) {
-        final int status = pedidoFirebase.getStatus();
-        final String idpedido = pedidoFirebase.getIdpedido();
-        pedidoViewHolder.setPedido(pedidoFirebase.getPedido());
-        pedidoViewHolder.setDataPedido(pedidoFirebase.getData(), pedidoFirebase.getHora());
-        pedidoViewHolder.setUsuario(pedidoFirebase.getNomeusuario());
-        pedidoViewHolder.setTelefone(pedidoFirebase.getTelefone());
-        pedidoViewHolder.setEndereco(pedidoFirebase.getEndereco(), pedidoFirebase.getNumero(), pedidoFirebase.getComplemento());
-        pedidoViewHolder.setBairro(pedidoFirebase.getBairro());
-        pedidoViewHolder.setCidade(pedidoFirebase.getCidade(), pedidoFirebase.getUf(), pedidoFirebase.getCep());
-        pedidoViewHolder.setFormaPagamento(pedidoFirebase.getFormapagamento());
-        pedidoViewHolder.setValorProdutos(pedidoFirebase.getValorprodutos());
-        pedidoViewHolder.setValorDesconto(pedidoFirebase.getValordesconto());
-        pedidoViewHolder.setValorFrete(pedidoFirebase.getValorfrete());
-        pedidoViewHolder.setValorCash(pedidoFirebase.getValorcash());
-        pedidoViewHolder.setValorTotal(pedidoFirebase.getValortotal());
+    public void onBindParentViewHolder(@NonNull PedidoViewHolder pedidoViewHolder, int parentPosition, @NonNull Pedido pedido) {
+        final int status = pedido.getStatus();
+        final String idpedido = pedido.getIdpedido();
+        final long npedido = pedido.getPedido();
+        final String idusuario = pedido.getUsuario();
+        final double valorcashganho = pedido.getValorCashGanho();
+        final double valorcashutilizado = pedido.getValorcash();
+        final String idcupomutilizado = (pedido.getIdcupomutilizado() == null?"":pedido.getIdcupomutilizado());
+        pedidoViewHolder.setPedido(npedido);
+        pedidoViewHolder.setDataPedido(pedido.getData(), pedido.getHora());
+        pedidoViewHolder.setUsuario(pedido.getNomeusuario());
+        pedidoViewHolder.setTelefone(pedido.getTelefone());
+        pedidoViewHolder.setEndereco(pedido.getEndereco(), pedido.getNumero(), pedido.getComplemento());
+        pedidoViewHolder.setBairro(pedido.getBairro());
+        pedidoViewHolder.setCidade(pedido.getCidade(), pedido.getUf(), pedido.getCep());
+        pedidoViewHolder.setFormaPagamento(pedido.getFormapagamento());
+        pedidoViewHolder.setValorProdutos(pedido.getValorprodutos());
+        pedidoViewHolder.setValorDesconto(pedido.getValordesconto());
+        pedidoViewHolder.setValorFrete(pedido.getValorfrete());
+        pedidoViewHolder.setValorCash(valorcashutilizado);
+        pedidoViewHolder.setValorTotal(pedido.getValortotal());
         pedidoViewHolder.setImagemTituloBtnAprovar(status);
 
         pedidoViewHolder.btnAprovar.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +126,11 @@ public class PedidoProdutoAdapter extends ExpandableRecyclerAdapter<PedidoFireba
                             .setPositiveButton(strstatus.substring(0, 1).toUpperCase().concat(strstatus.substring(1)), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    atualizarStatusPedido(idpedido, novostatus);
+                                    atualizaStatusPedido(idusuario, idpedido, novostatus);
+                                    salvaHorario(idpedido, novostatus);
+                                    if(novostatus == 5){
+                                        salvaExtratoCashBack(idusuario, npedido, valorcashganho);
+                                    }
                                 }
                             })
                             .setNegativeButton("Cancelar", null)
@@ -137,7 +158,12 @@ public class PedidoProdutoAdapter extends ExpandableRecyclerAdapter<PedidoFireba
                             .setPositiveButton(strstatus.substring(0, 1).toUpperCase().concat(strstatus.substring(1)), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    atualizarStatusPedido(idpedido, novostatus);
+                                    atualizaStatusPedido(idusuario, idpedido, novostatus);
+                                    salvaHorario(idpedido, novostatus);
+                                    salvaExtratoCashBack(idusuario, npedido, valorcashutilizado);
+                                    if (!idcupomutilizado.isEmpty()) {
+                                        atualizaCupomUtilizado(idusuario, idcupomutilizado);
+                                    }
                                 }
                             })
                             .setNegativeButton("Não", null)
@@ -149,13 +175,13 @@ public class PedidoProdutoAdapter extends ExpandableRecyclerAdapter<PedidoFireba
     }
 
     @Override
-    public void onBindChildViewHolder(@NonNull ProdutoViewHolder produtoViewHolder, int parentPosition, int childPosition, @NonNull PedidoProdutoFirebase pedidoProdutoFirebase) {
-        produtoViewHolder.setProduto(pedidoProdutoFirebase.getProduto());
-        produtoViewHolder.setQuantidade(pedidoProdutoFirebase.getQuantidade());
-        produtoViewHolder.setValorUnitario(pedidoProdutoFirebase.getValor());
-        produtoViewHolder.setValorTotal(pedidoProdutoFirebase.getValortotal());
-        produtoViewHolder.setObservacao(pedidoProdutoFirebase.getObs());
-        produtoViewHolder.setComplemento(pedidoProdutoFirebase.getComplemento());
+    public void onBindChildViewHolder(@NonNull ProdutoViewHolder produtoViewHolder, int parentPosition, int childPosition, @NonNull PedidoProduto pedidoProduto) {
+        produtoViewHolder.setProduto(pedidoProduto.getProduto());
+        produtoViewHolder.setQuantidade(pedidoProduto.getQuantidade());
+        produtoViewHolder.setValorUnitario(pedidoProduto.getValor());
+        produtoViewHolder.setValorTotal(pedidoProduto.getValortotal());
+        produtoViewHolder.setObservacao(pedidoProduto.getObs());
+        produtoViewHolder.setComplemento(pedidoProduto.getComplemento());
     }
 
     @Override
@@ -169,19 +195,22 @@ public class PedidoProdutoAdapter extends ExpandableRecyclerAdapter<PedidoFireba
 //        super.notifyChildChanged(parentPosition, childPosition);
 //    }
 
-    private void atualizarStatusPedido(String idpedido, int novostatus){
-        Map<String,Object> taskMap = new HashMap<>();
-        taskMap.put("status", novostatus);
-        dbrestaurantepedidos.child(idrestaurante).child(idpedido).updateChildren(taskMap);
-        dbpedidos.child(idpedido).updateChildren(taskMap);
+    private void atualizaStatusPedido(String idusuario, String idpedido, int novostatus){
+        DatabaseReference dbrestaurantepedidos = db.child("restaurantepedidos");
+        DatabaseReference dbpedidos = db.child("pedidos");
+        DatabaseReference dbusuariopedidos = db.child("usuariopedidos").child(idusuario);
+
+        dataFormatada = dateFormat.format(new Date());
+        horaFormatada = horaFormat.format(new Date());
+        datamili = new Date().getTime();
+
+        dbrestaurantepedidos.child(idrestaurante).child(idpedido).child("status").setValue(novostatus);
+        dbpedidos.child(idpedido).child("status").setValue(novostatus);
+        dbusuariopedidos.child(idpedido).child("statuspedido").setValue(novostatus);
 
         switch (novostatus){
             case 1:
                 strstatus = "aprovado";
-                NotificationManager nMgr = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
-                if (nMgr != null) {
-                    nMgr.cancelAll();
-                }
                 break;
             case 2:
                 strstatus = "enviado";
@@ -198,6 +227,100 @@ public class PedidoProdutoAdapter extends ExpandableRecyclerAdapter<PedidoFireba
         }
 
         new ToastLayoutUtil(activity).mensagem(activity.getString(R.string.atualizado_sucesso, strstatus));
+    }
+
+    private void salvaHorario(String idpedido, int novostatus){
+        DatabaseReference dbpedidohorarios = db.child("pedidohorarios").child(idpedido);
+
+        Map<String,Object> taskMap = new HashMap<>();
+        switch (novostatus){
+            case 1:
+                taskMap.put("aprovado", horaFormatada);
+                break;
+            case 2:
+                taskMap.put("enviado", horaFormatada);
+                break;
+            case 3:
+                taskMap.put("recusado", horaFormatada);
+                break;
+            case 4:
+                taskMap.put("cancelado", horaFormatada);
+                break;
+            case 5:
+                taskMap.put("concluido", horaFormatada);
+                break;
+        }
+        dbpedidohorarios.updateChildren(taskMap);
+    }
+
+    private void salvaExtratoCashBack(String idusuario, Long idpedido, Double valorcash){
+        DatabaseReference dbusuariocashbackextrato = db.child("usuariocashbackextrato/"+idusuario);
+
+        UsuariosCashBackExtrato usuariosCashBackExtrato = new UsuariosCashBackExtrato();
+        usuariosCashBackExtrato.setDatahora(dataFormatada + " " + horaFormatada);
+        usuariosCashBackExtrato.setDatahoramseg(datamili);
+        usuariosCashBackExtrato.setPedido(idpedido);
+        usuariosCashBackExtrato.setRestaurante(idrestaurante);
+        usuariosCashBackExtrato.setValor(valorcash);
+        dbusuariocashbackextrato.push().setValue(usuariosCashBackExtrato);
+
+        atualizaSaldoCashBack(idusuario, valorcash);
+    }
+
+    private void atualizaSaldoCashBack(String idusuario, final Double valorcash) {
+        DatabaseReference dbusuarios = db.child("usuarios/"+idusuario+"/cashbacksaldo");
+        dbusuarios.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull final MutableData currentData) {
+                if (currentData.getValue() == null) {
+                    currentData.setValue(valorcash);
+                }else {
+                    currentData.setValue(Double.parseDouble(currentData.getValue().toString()) + valorcash);
+                }
+                return Transaction.success(currentData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                if (databaseError != null) {
+                    System.out.println("Firebase counter increment failed.");
+                } else {
+                    System.out.println("Firebase counter increment succeeded.");
+                }
+            }
+        });
+    }
+
+    private void atualizaCupomUtilizado(final String idusuario, final String idcupomutilizado){
+        final DatabaseReference dbusuariocuponsutilizados = db.child("usuariocuponsutilizados").child(idusuario).child(idrestaurante).child(idcupomutilizado);
+        dbusuariocuponsutilizados.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    Cupom cupom = new Cupom();
+                    if (dataSnapshot.child("desconto").exists()) cupom.setDesconto(Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("desconto").getValue()).toString()));
+                    if (dataSnapshot.child("dom").exists()) cupom.setDom(Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("dom").getValue()).toString()));
+                    if (dataSnapshot.child("seg").exists()) cupom.setSeg(Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("seg").getValue()).toString()));
+                    if (dataSnapshot.child("ter").exists()) cupom.setTer(Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("ter").getValue()).toString()));
+                    if (dataSnapshot.child("qua").exists()) cupom.setQua(Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("qua").getValue()).toString()));
+                    if (dataSnapshot.child("qui").exists()) cupom.setQui(Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("qui").getValue()).toString()));
+                    if (dataSnapshot.child("sex").exists()) cupom.setSex(Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("sex").getValue()).toString()));
+                    if (dataSnapshot.child("sab").exists()) cupom.setSab(Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("sab").getValue()).toString()));
+                    if (dataSnapshot.child("validade").exists()) cupom.setValidade(Objects.requireNonNull(dataSnapshot.child("validade").getValue()).toString());
+                    if (dataSnapshot.child("validademseg").exists()) cupom.setValidademseg(Long.parseLong(Objects.requireNonNull(dataSnapshot.child("validademseg").getValue()).toString()));
+
+                    DatabaseReference dbusuariocuponsresgatados = db.child("usuariocuponsresgatados").child(idusuario).child(idrestaurante).child(idcupomutilizado);
+                    dbusuariocuponsresgatados.setValue(cupom);
+                    dbusuariocuponsutilizados.removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     class PedidoViewHolder extends ParentViewHolder {
@@ -241,7 +364,7 @@ public class PedidoProdutoAdapter extends ExpandableRecyclerAdapter<PedidoFireba
             });
         }
 
-        private void setPedido(int pedido) {
+        private void setPedido(long pedido) {
             txtPedido.setText(view.getContext().getString(R.string.n_pedido, String.valueOf(pedido)));
         }
 

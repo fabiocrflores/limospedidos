@@ -4,12 +4,13 @@ import com.bignerdranch.expandablerecyclerview.model.Parent;
 
 import java.util.List;
 
-public class PedidoFirebase implements Parent<PedidoProdutoFirebase> {
-    private int status, pedido;
-    private String idpedido, data, hora, nomeusuario, telefone, endereco, numero, complemento, bairro, cidade, uf, cep, formapagamento;
-    private double valorprodutos, valordesconto, valorfrete, valorcash, valortotal;
+public class Pedido implements Parent<PedidoProduto> {
+    private int status;
+    private long pedido;
+    private String idpedido, data, hora, usuario, nomeusuario, telefone, endereco, numero, complemento, bairro, cidade, uf, cep, formapagamento, idcupomutilizado;
+    private double valorprodutos, valordesconto, valorfrete, valorcash, valortotal, valorcashganho;
     private boolean iniciaexpandido;
-    private List<PedidoProdutoFirebase> listaPedidoProdutos;
+    private List<PedidoProduto> listaPedidoProdutos;
 
     public int getStatus() {
         return status;
@@ -27,11 +28,11 @@ public class PedidoFirebase implements Parent<PedidoProdutoFirebase> {
         this.idpedido = idpedido;
     }
 
-    public int getPedido() {
+    public long getPedido() {
         return pedido;
     }
 
-    public void setPedido(int pedido) {
+    public void setPedido(long pedido) {
         this.pedido = pedido;
     }
 
@@ -49,6 +50,14 @@ public class PedidoFirebase implements Parent<PedidoProdutoFirebase> {
 
     public void setHora(String hora) {
         this.hora = hora;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
     }
 
     public String getNomeusuario() {
@@ -131,6 +140,14 @@ public class PedidoFirebase implements Parent<PedidoProdutoFirebase> {
         this.formapagamento = formapagamento;
     }
 
+    public String getIdcupomutilizado() {
+        return idcupomutilizado;
+    }
+
+    public void setIdcupomutilizado(String idcupomutilizado) {
+        this.idcupomutilizado = idcupomutilizado;
+    }
+
     public double getValorprodutos() {
         return valorprodutos;
     }
@@ -171,12 +188,20 @@ public class PedidoFirebase implements Parent<PedidoProdutoFirebase> {
         this.valortotal = valortotal;
     }
 
+    public double getValorCashGanho() {
+        return valorcashganho;
+    }
+
+    public void setValorCashGanho(double valorcashganho) {
+        this.valorcashganho = valorcashganho;
+    }
+
     @Override
-    public List<PedidoProdutoFirebase> getChildList() {
+    public List<PedidoProduto> getChildList() {
         return listaPedidoProdutos;
     }
 
-    public void setChildItemList(List<PedidoProdutoFirebase> listaPedidoProduto) {
+    public void setChildItemList(List<PedidoProduto> listaPedidoProduto) {
         listaPedidoProdutos = listaPedidoProduto;
     }
 
