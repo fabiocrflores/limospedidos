@@ -468,7 +468,7 @@ public class PedidoProdutoAdapter extends ExpandableRecyclerAdapter<Pedido, Pedi
         }
 
         private void setQuantidade(double quantidade) {
-            txtQuantidade.setText(view.getContext().getString(R.string.quantidade, NumberFormat.getCurrencyInstance(ptBr).format(quantidade)));
+            txtQuantidade.setText(view.getContext().getString(R.string.quantidade, String.valueOf(quantidade)));
         }
 
         private void setValorUnitario(double valorunitario) {
